@@ -20,5 +20,3 @@ RUN pecl install redis \
 
 RUN apk del $PHPIZE_DEPS
 RUN rm -rf /var/cache/apk/*
-
-USER www-data

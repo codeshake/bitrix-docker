@@ -5,6 +5,7 @@ services:
             context: .
             dockerfile: docker/php/Dockerfile
         restart: unless-stopped
+        user: www-data
         command: php-fpm -F
         volumes:
             - ./docker/php/php.${APP_ENV}.ini:/usr/local/etc/php/conf.d/99-bitrix.ini
