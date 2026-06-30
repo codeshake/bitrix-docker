@@ -53,16 +53,16 @@ Docker-окружение для разработки и запуска прое
 В файле `certs/openssl.cnf` необходимо указать локальный домен в поле `DNS.2`.
 
 ```bash
-openssl genrsa -out ./certs/server.key 2048
+openssl genrsa -out ./docker/certs/server.key 2048
 
 openssl req \
     -x509 \
     -nodes \
     -days 3650 \
     -newkey rsa:2048 \
-    -keyout ./certs/server.key \
-    -out ./certs/server.crt \
-    -config ./certs/openssl.cnf
+    -keyout ./docker/certs/server.key \
+    -out ./docker/certs/server.crt \
+    -config ./docker/certs/openssl.cnf
 ```
 
 ### Настройка отправки почты

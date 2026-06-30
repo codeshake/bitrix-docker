@@ -33,7 +33,7 @@ services:
             - ./www:/var/www/bitrix
             - ./docker/nginx/bitrix.conf:/etc/nginx/bitrix.conf
             - ./docker/nginx/${APP_ENV}.conf:/etc/nginx/conf.d/default.conf
-            - ./certs:/etc/nginx/ssl
+            - ./docker/certs:/etc/nginx/ssl
         depends_on:
             - php
         networks:
