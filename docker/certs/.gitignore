@@ -1,5 +1,2 @@
-# Certificates
-*.crt
-*.cer
-*.pem
-*.key
+*
+!.gitignore

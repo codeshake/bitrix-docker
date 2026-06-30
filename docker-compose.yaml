@@ -1,15 +1,23 @@
+x-php-base: &php-base
+    image: ${APP_ID}-php:latest
+    build:
+        context: .
+        dockerfile: docker/php/Dockerfile
+        args:
+            APP_DEV_DOMAIN: ${APP_DEV_DOMAIN}
+    restart: unless-stopped
+    user: www-data
+
 services:
-    php: &php-base
+    php:
+        <<: *php-base
         container_name: ${APP_ID}-php
-        build:
-            context: .
-            dockerfile: docker/php/Dockerfile
-        restart: unless-stopped
-        user: www-data
+        entrypoint: ["/usr/local/bin/docker-entrypoint.sh"]
         command: ["php-fpm", "-F"]
         volumes:
             - ./docker/php/php.${APP_ENV}.ini:/usr/local/etc/php/conf.d/99-bitrix.ini
             - ./docker/php/msmtprc:/etc/msmtprc
+            - ./docker/certs:/certs
             - ./www:/var/www/bitrix
 
     cron:
