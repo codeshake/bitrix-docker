@@ -1,0 +1,68 @@
+services:
+    php: &php-base
+        container_name: ${APP_ID}-php
+        build:
+            context: .
+            dockerfile: docker/php/Dockerfile
+        restart: unless-stopped
+        command: php-fpm -F
+        volumes:
+            - ./docker/php/php.${APP_ENV}.ini:/usr/local/etc/php/conf.d/99-bitrix.ini
+            - ./docker/php/msmtprc:/etc/msmtprc
+            - ./storage/certs/server.crt:/usr/local/share/ca-certificates/server.crt
+            - ./www:/var/www/bitrix
+
+    cron:
+        <<: *php-base
+        container_name: ${APP_ID}-cron
+        command: crond -f -l 2
+        volumes:
+            - ./docker/php/php.${APP_ENV}.ini:/usr/local/etc/php/conf.d/99-bitrix.ini
+            - ./docker/php/msmtprc:/etc/msmtprc
+            - ./storage/certs/server.crt:/usr/local/share/ca-certificates/server.crt
+            - ./www:/var/www/bitrix
+            - ./docker/php/crontab:/etc/crontabs/www-data
+
+    nginx:
+        container_name: ${APP_ID}-nginx
+        image: nginx:stable-alpine
+        restart: unless-stopped
+        ports:
+            - "80:80"
+            - "443:443"
+        volumes:
+            - ./www:/var/www/bitrix
+            - ./docker/nginx/bitrix.conf:/etc/nginx/bitrix.conf
+            - ./docker/nginx/${APP_ENV}.conf:/etc/nginx/conf.d/default.conf
+            - ./storage/certs:/etc/nginx/ssl
+        depends_on:
+            - php
+        networks:
+            default:
+                aliases:
+                    - ${APP_DEV_DOMAIN}
+
+    mysql:
+        container_name: ${APP_ID}-mysql
+        image: mariadb:12
+        restart: unless-stopped
+        ports:
+            - "3306:3306"
+        volumes:
+            - ./docker/mysql/my.cnf:/etc/mysql/conf.d/99-bitrix.cnf
+            - ./storage/mysql:/var/lib/mysql
+        env_file:
+            - .env
+
+    redis:
+        container_name: ${APP_ID}-redis
+        image: redis:8-alpine
+        restart: unless-stopped
+        ports:
+            - "6379:6379"
+        volumes:
+            - ./storage/redis:/data
+
+networks:
+    default:
+        name: ${APP_ID}-network

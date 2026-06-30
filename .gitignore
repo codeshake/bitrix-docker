@@ -1,0 +1,22 @@
+# Storage
+/storage
+
+# System Files
+.DS_Store
+Thumbs.db
+[Dd]esktop.ini
+
+# Links
+*.lnk
+
+# Editors
+.idea/
+.vscode/
+
+# Bitrix
+/www/bitrix
+/www/upload
+
+# Config files
+/docker/php/msmtprc
+.env
