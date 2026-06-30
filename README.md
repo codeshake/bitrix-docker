@@ -50,26 +50,19 @@ Docker-окружение для разработки и запуска прое
 
 > Для продакшен-окружения данный раздел не требуется.
 
-В файле `openssl.cnf` необходимо указать локальный домен в поле `DNS.2`.
+В файле `certs/openssl.cnf` необходимо указать локальный домен в поле `DNS.2`.
 
 ```bash
-openssl genrsa -out ./storage/certs/server.key 2048
+openssl genrsa -out ./certs/server.key 2048
 
 openssl req \
     -x509 \
     -nodes \
     -days 3650 \
     -newkey rsa:2048 \
-    -keyout ./storage/certs/server.key \
-    -out ./storage/certs/server.crt \
-    -config ./openssl.cnf
-```
-
-После генерации сертификатов необходимо обновить список доверенных сертификатов внутри контейнеров.
-
-```bash
-docker compose exec --user root php sh -c "update-ca-certificates"
-docker compose exec --user root cron sh -c "update-ca-certificates"
+    -keyout ./certs/server.key \
+    -out ./certs/server.crt \
+    -config ./certs/openssl.cnf
 ```
 
 ### Настройка отправки почты

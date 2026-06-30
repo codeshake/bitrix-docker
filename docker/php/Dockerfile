@@ -21,3 +21,9 @@ RUN pecl install redis \
 
 RUN apk del $PHPIZE_DEPS
 RUN rm -rf /var/cache/apk/*
+
+RUN --mount=type=bind,source=certs,target=/certs \
+    if [ -f /certs/server.crt ]; then \
+        cp /certs/server.crt /usr/local/share/ca-certificates/server.crt && \
+        update-ca-certificates ; \
+    fi
