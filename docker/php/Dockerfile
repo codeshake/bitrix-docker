@@ -7,7 +7,8 @@ RUN apk add --no-cache \
     freetype-dev \
     libjpeg-turbo-dev \
     libpng-dev \
-    msmtp
+    msmtp \
+    supercronic
 
 RUN docker-php-ext-configure gd \
         --with-freetype \

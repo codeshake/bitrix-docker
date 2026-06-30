@@ -6,7 +6,7 @@ services:
             dockerfile: docker/php/Dockerfile
         restart: unless-stopped
         user: www-data
-        command: php-fpm -F
+        command: ["php-fpm", "-F"]
         volumes:
             - ./docker/php/php.${APP_ENV}.ini:/usr/local/etc/php/conf.d/99-bitrix.ini
             - ./docker/php/msmtprc:/etc/msmtprc
@@ -16,7 +16,7 @@ services:
     cron:
         <<: *php-base
         container_name: ${APP_ID}-cron
-        command: crond -f -l 2
+        command: ["supercronic", "/etc/crontabs/www-data"]
         volumes:
             - ./docker/php/php.${APP_ENV}.ini:/usr/local/etc/php/conf.d/99-bitrix.ini
             - ./docker/php/msmtprc:/etc/msmtprc
