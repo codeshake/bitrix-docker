@@ -1,3 +1,9 @@
+x-logging: &logging
+    driver: json-file
+    options:
+        max-size: "10m"
+        max-file: "5"
+
 services:
     php: &php-base
         image: ${APP_ID}-php:latest
@@ -7,6 +13,7 @@ services:
         restart: unless-stopped
         container_name: ${APP_ID}-php
         command: ["php-fpm", "-F"]
+        logging: *logging
         volumes:
             - ./docker/php/php-fpm.conf:/usr/local/etc/php-fpm.d/zz-docker.conf
             - ./docker/php/php.${APP_ENV}.ini:/usr/local/etc/php/conf.d/99-bitrix.ini
@@ -31,6 +38,7 @@ services:
         container_name: ${APP_ID}-nginx
         image: nginx:stable-alpine
         restart: unless-stopped
+        logging: *logging
         ports:
             - "80:80"
             - "443:443"
@@ -41,11 +49,6 @@ services:
             - ./docker/certs:/etc/nginx/ssl
         depends_on:
             - php
-        logging:
-            driver: "json-file"
-            options:
-                max-size: "10m"
-                max-file: "3"
         networks:
             default:
                 aliases:
@@ -55,6 +58,7 @@ services:
         container_name: ${APP_ID}-mysql
         image: mariadb:12
         restart: unless-stopped
+        logging: *logging
         ports:
             - "3306:3306"
         volumes:
@@ -72,6 +76,7 @@ services:
         container_name: ${APP_ID}-redis
         image: redis:8-alpine
         restart: unless-stopped
+        logging: *logging
         ports:
             - "6379:6379"
         volumes:

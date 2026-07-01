@@ -4,7 +4,7 @@ set -e
 CERT_DIR="/opt/certs"
 
 if [ "$APP_ENV" = "dev" ] && [ -d "$CERT_DIR" ]; then
-    OPENSSL_CNF_FILE="tmp/openssl.cnf"
+    OPENSSL_CNF_FILE="/tmp/openssl.cnf"
     KEY_FILE="$CERT_DIR/server.key"
     CERT_FILE="$CERT_DIR/server.crt"
 
