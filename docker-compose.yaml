@@ -12,6 +12,7 @@ services:
         entrypoint: ["/usr/local/bin/docker-entrypoint.sh"]
         command: ["php-fpm", "-F"]
         volumes:
+            - ./docker/php/php-fpm.conf:/usr/local/etc/php-fpm.d/zz-docker.conf
             - ./docker/php/php.${APP_ENV}.ini:/usr/local/etc/php/conf.d/99-bitrix.ini
             - ./docker/php/msmtprc:/etc/msmtprc
             - ./docker/certs:/opt/certs
@@ -22,13 +23,14 @@ services:
     cron:
         <<: *php-base
         container_name: ${APP_ID}-cron
-        command: ["supercronic", "/etc/crontabs/www-data"]
+        command: ["supercronic", "-quiet", "/etc/crontabs/www-data"]
         depends_on:
             mysql:
                 condition: service_healthy
             redis:
                 condition: service_healthy
         volumes:
+            - ./docker/php/php-fpm.conf:/usr/local/etc/php-fpm.d/zz-docker.conf
             - ./docker/php/php.${APP_ENV}.ini:/usr/local/etc/php/conf.d/99-bitrix.ini
             - ./docker/php/msmtprc:/etc/msmtprc
             - ./www:/var/www/bitrix
@@ -50,6 +52,11 @@ services:
             - ./docker/certs:/etc/nginx/ssl
         depends_on:
             - php
+        logging:
+            driver: "json-file"
+            options:
+                max-size: "10m"
+                max-file: "3"
         networks:
             default:
                 aliases:
@@ -62,7 +69,7 @@ services:
         ports:
             - "3306:3306"
         volumes:
-            - ./docker/mysql/my.cnf:/etc/mysql/conf.d/99-bitrix.cnf
+            - ./docker/mysql/my.${APP_ENV}.cnf:/etc/mysql/conf.d/99-bitrix.cnf
             - ./storage/mysql:/var/lib/mysql
         env_file:
             - .env
@@ -79,7 +86,9 @@ services:
         ports:
             - "6379:6379"
         volumes:
+            - ./docker/redis/redis.${APP_ENV}.conf:/usr/local/etc/redis/redis.conf
             - ./storage/redis:/data
+        command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
         healthcheck:
             test: ["CMD", "redis-cli", "ping"]
             interval: 10s
