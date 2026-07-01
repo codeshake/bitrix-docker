@@ -3,10 +3,7 @@ x-php-base: &php-base
     build:
         context: .
         dockerfile: docker/php/Dockerfile
-        args:
-            APP_DEV_DOMAIN: ${APP_DEV_DOMAIN}
     restart: unless-stopped
-    user: www-data
 
 services:
     php:
@@ -17,8 +14,10 @@ services:
         volumes:
             - ./docker/php/php.${APP_ENV}.ini:/usr/local/etc/php/conf.d/99-bitrix.ini
             - ./docker/php/msmtprc:/etc/msmtprc
-            - ./docker/certs:/certs
+            - ./docker/certs:/opt/certs
             - ./www:/var/www/bitrix
+        env_file:
+            - .env
 
     cron:
         <<: *php-base
