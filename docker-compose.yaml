@@ -1,19 +1,17 @@
-x-php-base: &php-base
-    image: ${APP_ID}-php:latest
-    build:
-        context: .
-        dockerfile: docker/php/Dockerfile
-    restart: unless-stopped
-
 services:
-    php:
-        <<: *php-base
+    php: &php-base
+        image: ${APP_ID}-php:latest
+        build:
+            context: .
+            dockerfile: docker/php/Dockerfile
+        restart: unless-stopped
         container_name: ${APP_ID}-php
         command: ["php-fpm", "-F"]
         volumes:
             - ./docker/php/php-fpm.conf:/usr/local/etc/php-fpm.d/zz-docker.conf
             - ./docker/php/php.${APP_ENV}.ini:/usr/local/etc/php/conf.d/99-bitrix.ini
             - ./docker/php/msmtprc:/etc/msmtprc
+            - ./docker/php/crontab:/etc/crontabs/www-data
             - ./docker/certs:/opt/certs
             - ./www:/var/www/bitrix
         env_file:
@@ -28,15 +26,6 @@ services:
                 condition: service_healthy
             redis:
                 condition: service_healthy
-        volumes:
-            - ./docker/php/php-fpm.conf:/usr/local/etc/php-fpm.d/zz-docker.conf
-            - ./docker/php/php.${APP_ENV}.ini:/usr/local/etc/php/conf.d/99-bitrix.ini
-            - ./docker/php/msmtprc:/etc/msmtprc
-            - ./docker/certs:/opt/certs
-            - ./www:/var/www/bitrix
-            - ./docker/php/crontab:/etc/crontabs/www-data
-        env_file:
-            - .env
 
     nginx:
         container_name: ${APP_ID}-nginx
