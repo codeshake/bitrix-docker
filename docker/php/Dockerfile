@@ -28,3 +28,5 @@ RUN usermod -u 1000 www-data && groupmod -g 1000 www-data
 COPY ./docker/php/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]

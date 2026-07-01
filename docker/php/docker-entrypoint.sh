@@ -8,7 +8,12 @@ if [ "$APP_ENV" = "dev" ] && [ -d "$CERT_DIR" ]; then
     KEY_FILE="$CERT_DIR/server.key"
     CERT_FILE="$CERT_DIR/server.crt"
 
-    cat > "$OPENSSL_CNF_FILE" <<EOF
+    if [ ! -f "$KEY_FILE" ]; then
+        openssl genrsa -out "$KEY_FILE" 2048
+    fi
+
+    if [ ! -f "$CERT_FILE" ]; then
+        cat > "$OPENSSL_CNF_FILE" <<EOF
 [req]
 default_bits = 2048
 prompt = no
@@ -28,11 +33,6 @@ DNS.2 = ${APP_DEV_DOMAIN}
 IP.1 = 127.0.0.1
 EOF
 
-    if [ ! -f "$KEY_FILE" ]; then
-        openssl genrsa -out "$KEY_FILE" 2048
-    fi
-
-    if [ ! -f "$CERT_FILE" ]; then
         openssl req \
             -x509 \
             -nodes \
@@ -42,8 +42,10 @@ EOF
             -out "$CERT_FILE" \
             -config "$OPENSSL_CNF_FILE"
 
-        cp "$CERT_FILE" /usr/local/share/ca-certificates/server.crt
+        rm -rf "$OPENSSL_CNF_FILE"
     fi
+
+    cp "$CERT_FILE" /usr/local/share/ca-certificates/server.crt
 
     update-ca-certificates
 fi

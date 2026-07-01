@@ -9,7 +9,6 @@ services:
     php:
         <<: *php-base
         container_name: ${APP_ID}-php
-        entrypoint: ["/usr/local/bin/docker-entrypoint.sh"]
         command: ["php-fpm", "-F"]
         volumes:
             - ./docker/php/php-fpm.conf:/usr/local/etc/php-fpm.d/zz-docker.conf
@@ -33,6 +32,7 @@ services:
             - ./docker/php/php-fpm.conf:/usr/local/etc/php-fpm.d/zz-docker.conf
             - ./docker/php/php.${APP_ENV}.ini:/usr/local/etc/php/conf.d/99-bitrix.ini
             - ./docker/php/msmtprc:/etc/msmtprc
+            - ./docker/certs:/opt/certs
             - ./www:/var/www/bitrix
             - ./docker/php/crontab:/etc/crontabs/www-data
         env_file:
