@@ -23,11 +23,18 @@ services:
         <<: *php-base
         container_name: ${APP_ID}-cron
         command: ["supercronic", "/etc/crontabs/www-data"]
+        depends_on:
+            mysql:
+                condition: service_healthy
+            redis:
+                condition: service_healthy
         volumes:
             - ./docker/php/php.${APP_ENV}.ini:/usr/local/etc/php/conf.d/99-bitrix.ini
             - ./docker/php/msmtprc:/etc/msmtprc
             - ./www:/var/www/bitrix
             - ./docker/php/crontab:/etc/crontabs/www-data
+        env_file:
+            - .env
 
     nginx:
         container_name: ${APP_ID}-nginx
@@ -59,6 +66,11 @@ services:
             - ./storage/mysql:/var/lib/mysql
         env_file:
             - .env
+        healthcheck:
+            test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
 
     redis:
         container_name: ${APP_ID}-redis
@@ -68,6 +80,11 @@ services:
             - "6379:6379"
         volumes:
             - ./storage/redis:/data
+        healthcheck:
+            test: ["CMD", "redis-cli", "ping"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
 
 networks:
     default:
