@@ -1,1 +1,1 @@
-* * * * * /usr/local/bin/php -f /var/www/bitrix/bitrix/modules/main/tools/cron_events.php
+* * * * * /usr/local/bin/php -f /var/www/site/bitrix/modules/main/tools/cron_events.php
