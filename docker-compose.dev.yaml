@@ -1,0 +1,27 @@
+services:
+    php:
+        ports:
+            - "9000:9000"
+        environment:
+            XDEBUG_MODE: debug
+
+    nginx:
+        ports:
+            - "80:80"
+            - "443:443"
+        networks:
+            default:
+                aliases:
+                    - ${APP_DEV_DOMAIN}
+
+    mysql:
+        ports:
+            - "13306:3306"
+
+    redis:
+        ports:
+            - "16379:6379"
+
+networks:
+    default:
+        name: ${APP_ID}-network

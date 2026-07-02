@@ -41,8 +41,7 @@ services:
         restart: unless-stopped
         logging: *logging
         ports:
-            - "80:80"
-            - "443:443"
+            - "${NGINX_HTTP_PORT}:80"
         volumes:
             - ./www:/var/www/site
             - ./docker/nginx/bitrix.conf:/etc/nginx/bitrix.conf
@@ -50,18 +49,12 @@ services:
             - ./docker/certs:/etc/nginx/ssl
         depends_on:
             - php
-        networks:
-            default:
-                aliases:
-                    - ${APP_DEV_DOMAIN}
 
     mysql:
         container_name: ${APP_ID}-mysql
         image: mariadb:12
         restart: unless-stopped
         logging: *logging
-        ports:
-            - "3306:3306"
         volumes:
             - ./docker/mysql/my.cnf:/etc/mysql/conf.d/98-common.cnf
             - ./docker/mysql/my.${APP_ENV}.cnf:/etc/mysql/conf.d/99-env.cnf
@@ -79,8 +72,6 @@ services:
         image: redis:8-alpine
         restart: unless-stopped
         logging: *logging
-        ports:
-            - "6379:6379"
         volumes:
             - ./docker/redis/redis.${APP_ENV}.conf:/usr/local/etc/redis/redis.conf
             - ./storage/redis:/data
@@ -90,7 +81,3 @@ services:
             interval: 10s
             timeout: 5s
             retries: 5
-
-networks:
-    default:
-        name: ${APP_ID}-network

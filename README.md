@@ -56,15 +56,20 @@ https://marlam.de/msmtp/msmtprc.txt
 ## Управление
 
 ```bash
-docker compose up -d        # сборка и запуск контейнеров
+docker compose \
+    -f docker-compose.yaml \
+    -f docker-compose.dev.yaml \
+    up -d --build                              # сборка и запуск контейнеров для разработки
 
-docker compose stop         # остановка контейнеров
+docker compose up -d --build --remove-orphans  # сборка и запуск контейнеров для прода
 
-docker compose down         # остановка и удаление контейнеров
+docker compose stop                            # остановка контейнеров
 
-docker compose logs -f      # просмотр логов
+docker compose down                            # остановка и удаление контейнеров
 
-docker compose exec php sh  # вход в PHP-контейнер
+docker compose logs -f                         # просмотр логов
+
+docker compose exec php sh                     # вход в PHP-контейнер
 ```
 
 ## Установка 1С-Битрикс
