@@ -6,7 +6,7 @@ x-logging: &logging
 
 services:
     php: &php-base
-        image: ${APP_ID}-php:latest
+        image: ${APP_ID}/php:latest
         build:
             context: .
             dockerfile: docker/php/Dockerfile
@@ -81,3 +81,16 @@ services:
             interval: 10s
             timeout: 5s
             retries: 5
+
+    sphinx:
+        image: ${APP_ID}/sphinx:latest
+        build:
+            context: .
+            dockerfile: docker/sphinx/Dockerfile
+        container_name: ${APP_ID}-sphinx
+        restart: unless-stopped
+        logging: *logging
+        volumes:
+            - ./docker/sphinx/sphinx.conf:/etc/sphinx.conf
+            - ./storage/sphinx:/opt/sphinx/index
+        command: ["searchd", "--config", "/etc/sphinx.conf", "--nodetach"]
